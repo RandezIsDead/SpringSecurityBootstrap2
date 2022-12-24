@@ -1,4 +1,4 @@
-package com.randez_trying.SpringSecurityBootstrap.repository;
+package com.randez_trying.SpringSecurityBootstrap.repositories;
 
 import com.randez_trying.SpringSecurityBootstrap.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;

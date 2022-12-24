@@ -1,68 +1,77 @@
 package com.randez_trying.SpringSecurityBootstrap.service;
 
+
 import com.randez_trying.SpringSecurityBootstrap.model.User;
-import com.randez_trying.SpringSecurityBootstrap.repository.UserRepository;
+import com.randez_trying.SpringSecurityBootstrap.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
 
 @Service
 @Transactional
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
-    private final UserRepository repository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository repository) {
-        this.repository = repository;
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-
+    @Transactional
     @Override
-    @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = repository.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
-        }
-        return user;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<User> getAllUsers() {
-        return repository.findAll();
+    return userRepository.findAll();
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public User getUserById(long id) {
-        Optional<User> user = repository.findById(id);
-        ArrayList<User> list = new ArrayList<>();
-        user.ifPresent(list::add);
-        return list.get(0);
+
+    @Transactional
+    public void createNewUser(User user) {
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        userRepository.save(user);
     }
 
+
+    @Transactional
     @Override
-    public void saveUser(User user) {
-        repository.save(user);
+    public User getUser(Long id) {
+        return userRepository.findById(id).get();
     }
 
-    @Override
-    public void updateUser(long id, User updatedUser) {
-        updatedUser.setId(id);
-        repository.save(updatedUser);
+    @Transactional
+    public void updateUser(User user) {
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        userRepository.save(user);
     }
 
-    @Override
-    public void deleteUser(long id) {
-        repository.deleteById(id);
+    @Transactional
+    public void deleteUser(Long id) {
+        userRepository.delete(userRepository.findById(id).get());
     }
+
+    @Transactional
+    public User findUserByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+
+
+
+    @Transactional
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("Пользователь не найден!");
+        }
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(), user.getPassword(), user.getAuthorities());
+    }
+
 }
