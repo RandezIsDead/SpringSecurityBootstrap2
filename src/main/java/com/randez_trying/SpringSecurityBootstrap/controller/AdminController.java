@@ -37,8 +37,7 @@ public class AdminController {
 
     @GetMapping("/new")
     public String newUserForm(Model model, @ModelAttribute("user") User user) {
-        List<Role> roles = roleService.getUniqAllRoles();
-        model.addAttribute("rolesAdd", roles);
+        model.addAttribute("rolesAdd", roleService.getUniqAllRoles());
         return "admin";
     }
 
@@ -51,8 +50,7 @@ public class AdminController {
     @GetMapping("/{id}/edit")
     public String edit(Model model, @PathVariable("id") long id) {
         model.addAttribute("userEdit", userService.getUser(id));
-        List<Role> roles = roleService.getAllRoles();
-        model.addAttribute("rolesAdd", roles);
+        model.addAttribute("rolesAdd", roleService.getAllRoles());
         return "admin";
     }
 
