@@ -42,9 +42,7 @@ public class SpringSecurityBootstrapApplication implements CommandLineRunner {
 
 		User userAdmin = new User("admin", "admin", "admin", "$2y$10$08fime4hWZ5TMO.JkPEmXuIwyBchRDIbR/5QqtOnDtXE1s1LV52De", adminRoles);
 		User userUser = new User("user", "user", "user", "$2y$10$GuP0CFLp71MpXFxHluKAy.t391.yfdkrTdSp6XRjvv2tnzGsTeH8O", userRoles);
-		System.out.println(userAdmin);
 		userRepository.save(userAdmin);
-		System.out.println(userUser);
 		userRepository.save(userUser);
 	}
 }
